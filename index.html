@@ -1,12 +1,550 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOCE SABOR</title>
+    <title>DOCE SABOR - Sucos, Vitaminas, Açaí & Salgados</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        },
+                        freshGreen: {
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding: 50px;">
-    <h1>🍓 DOCE SABOR 🍌</h1>
-    <p>Cardápio em construção! Em breve pedidos via WhatsApp.</p>
+<body class="h-full text-slate-800 antialiased flex flex-col bg-slate-50 selection:bg-brand-500 selection:text-white">
+
+    <header class="sticky top-0 z-30 bg-gradient-to-r from-orange-500 via-amber-500 to-emerald-600 text-white shadow-lg">
+        <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-orange-600 font-extrabold text-2xl shadow-inner border-2 border-orange-200">
+                    🍓
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight leading-none text-white">DOCE SABOR</h1>
+                    <p class="text-xs sm:text-sm font-medium text-amber-100 mt-0.5">Sucos, Vitaminas, Açaí & Conveniência</p>
+                </div>
+            </div>
+
+            <!-- WhatsApp Config button -->
+            <button onclick="toggleConfigModal()" class="flex items-center space-x-1 bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold transition">
+                <i data-lucide="settings" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Configurar Whats</span>
+            </button>
+        </div>
+
+        <!-- Banner Info Bar -->
+        <div class="bg-black/10 backdrop-blur-sm text-amber-50 py-1.5 px-4 text-center text-xs font-medium flex items-center justify-center space-x-4 border-t border-white/10">
+            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Aberto Hoje</span>
+            <span>•</span>
+            <span class="flex items-center gap-1"><i data-lucide="truck" class="w-3.5 h-3.5"></i> Fazemos Entregas</span>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:px-6 pb-32">
+
+        <!-- Search Bar -->
+        <div class="relative mb-6">
+            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+            <input type="text" id="searchInput" oninput="filterMenu()" placeholder="Buscar por suco, açaí, salgado ou bebida..."
+                class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition">
+        </div>
+
+        <!-- Category Horizontal Scroll Bar -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <button onclick="setCategory('todos')" class="cat-btn active bg-brand-500 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm whitespace-nowrap transition" data-cat="todos">
+                🌟 Todos os Itens
+            </button>
+            <button onclick="setCategory('sucos-tradicionais')" class="cat-btn bg-white text-slate-700 hover:bg-slate-100 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap transition" data-cat="sucos-tradicionais">
+                🍹 Sucos Tradicionais
+            </button>
+            <button onclick="setCategory('sucos-especiais')" class="cat-btn bg-white text-slate-700 hover:bg-slate-100 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap transition" data-cat="sucos-especiais">
+                ⭐ Sucos Especiais
+            </button>
+            <button onclick="setCategory('acai')" class="cat-btn bg-white text-slate-700 hover:bg-slate-100 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap transition" data-cat="acai">
+                🍨 Creme de Açaí
+            </button>
+            <button onclick="setCategory('salgados')" class="cat-btn bg-white text-slate-700 hover:bg-slate-100 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap transition" data-cat="salgados">
+                🥐 Salgados & Lanches
+            </button>
+            <button onclick="setCategory('bebidas')" class="cat-btn bg-white text-slate-700 hover:bg-slate-100 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap transition" data-cat="bebidas">
+                ⚡ Bebidas & Energéticos
+            </button>
+        </div>
+
+        <div id="menuContainer" class="space-y-8">
+            <!-- Dynamic menu items will be injected here via JavaScript -->
+        </div>
+
+    </main>
+
+    <div id="cartBar" class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 p-4 shadow-2xl transition-transform duration-300 translate-y-full">
+        <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
+            <div>
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Total do Pedido</span>
+                <span id="cartTotalText" class="text-xl font-extrabold text-slate-900">R$ 0,00</span>
+                <span id="cartCountBadge" class="text-xs text-brand-600 font-semibold block">0 itens selecionados</span>
+            </div>
+            <button onclick="openCartModal()" class="flex-1 max-w-xs bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition transform active:scale-95">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <span>Ver Carrinho</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="cartModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="shopping-cart" class="w-6 h-6 text-brand-500"></i>
+                    <h2 class="text-lg font-bold text-slate-800">Seu Pedido</h2>
+                </div>
+                <button onclick="closeCartModal()" class="p-2 rounded-full text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cartItemsList" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 divide-y divide-slate-100">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Cart Footer Form & Action -->
+            <div class="p-4 sm:p-6 bg-slate-50 border-t border-slate-100 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Seu Nome</label>
+                    <input type="text" id="customerName" placeholder="Ex: João Silva" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Forma de Entrega / Retirada</label>
+                    <select id="deliveryOption" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="Retirada no Quiosque">Retirada Rápida no Quiosque</option>
+                        <option value="Consumo no Local">Consumo no Local</option>
+                        <option value="Entrega">Entrega em Domicílio / Trabalho</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Observações do Pedido</label>
+                    <input type="text" id="orderNotes" placeholder="Ex: Sem açúcar, capricha na aveia, etc." class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-slate-900 font-extrabold text-lg">
+                    <span>Total Final:</span>
+                    <span id="modalTotalText">R$ 0,00</span>
+                </div>
+
+                <button onclick="sendOrderToWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                    <span>Enviar Pedido para o WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="configModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl mx-4">
+            <h3 class="text-base font-bold text-slate-800 mb-2">Configurar Número do WhatsApp</h3>
+            <p class="text-xs text-slate-500 mb-4">Insira o número do quiosque com DDD (somente números) para onde os pedidos serão enviados.</p>
+            <input type="text" id="whatsappNumberInput" placeholder="Ex: 5531999999999" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 mb-4 focus:ring-2 focus:ring-brand-500 outline-none">
+            <div class="flex gap-2">
+                <button onclick="toggleConfigModal()" class="flex-1 py-2 rounded-xl text-slate-600 bg-slate-100 hover:bg-slate-200 text-xs font-semibold transition">Cancelar</button>
+                <button onclick="saveWhatsappNumber()" class="flex-1 py-2 rounded-xl text-white bg-brand-500 hover:bg-brand-600 text-xs font-semibold transition">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default Kiosk WhatsApp (55 + DDD + Number)
+        let whatsappNumber = localStorage.getItem('doceSaborWhatsApp') || '5531999999999';
+
+        // Full Interactive Menu Data based on original provided menus
+        const menuData = [
+            {
+                category: 'sucos-tradicionais',
+                title: '🍹 Sucos & Vitaminas Tradicionais',
+                subtitle: 'Opções no Copo 500ml (R$ 11,00) ou Jarra 800ml (R$ 18,00)',
+                items: [
+                    { id: 'st1', name: '01 - Laranja e Abacaxi', desc: 'Suco natural e refrescante', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st2', name: '02 - Manga, Goiaba, Acerola e Leite', desc: 'Vitamina cremosa cheia de sabor', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st3', name: '03 - Laranja, Abacaxi e Hortelã', desc: 'Toque especial de hortelã fresca', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st4', name: '04 - Laranja, Acerola e Abacaxi', desc: 'Rico em Vitamina C', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st5', name: '05 - Limão c/ Leite ou Laranja', desc: 'Opção cremosa ou cítrica', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st6', name: '06 - Frutas c/ Leite ou Laranja', desc: 'Mix especial da casa', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st7', name: '07 - Laranja, Cenoura e Acerola', desc: 'Excelente energia natural', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st8', name: '08 - Maracujá c/ Laranja ou Leite', desc: 'Sabor marcante e suave', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st9', name: '09 - Goiaba, Acerola, Leite ou Laranja', desc: 'Combinação clássica', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st10', name: '10 - Laranja, Goiaba e Maracujá', desc: 'Mix tropical potente', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st11', name: '11 - Amendoim, Leite e Banana', desc: 'Vitamina reforçada', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st12', name: '12 - Banana, Mamão, Aveia e Leite', desc: 'Completa para o café da manhã ou lanche', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st13', name: '13 - Mamão, Acerola, Laranja ou Leite', desc: 'Deliciosa e nutritiva', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st14', name: '14 - Mamão, Banana, Maçã e Leite', desc: 'Clássica Vitamina de Frutas', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st15', name: '15 - Banana, Mamão, Goiaba e Leite', desc: 'Cremosa e energética', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st16', name: '16 - Beterraba, Laranja e Acerola', desc: 'Pura saúde e disposição', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] },
+                    { id: 'st17', name: '17 - Abacate c/ Leite', desc: 'Vitamina cremosa de abacate', prices: [{ label: 'Copo 500ml', val: 11.00 }, { label: 'Jarra 800ml', val: 18.00 }] }
+                ]
+            },
+            {
+                category: 'sucos-especiais',
+                title: '⭐ Sucos & Vitaminas Especiais',
+                subtitle: 'Opções no Copo 500ml (R$ 12,00) ou Jarra 800ml (R$ 21,00)',
+                items: [
+                    { id: 'se1', name: '01 - Açaí, Banana, Amendoim, Granola, Xarope, Aveia e Leite', desc: 'Super vitamina de açaí turbinada', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se2', name: '02 - Açaí, Banana, Aveia e Leite', desc: 'Vitamina leve de açaí', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se3', name: '03 - Açaí, Banana, Granola, Xarope e Leite', desc: 'Açaí batido completo', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se4', name: '04 - Açaí, Morango e Leite', desc: 'Combinação clássica açaí c/ morango', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se5', name: '05 - Açaí, Banana, Mamão e Leite', desc: 'Saboroso e bem cremoso', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se6', name: '06 - Açaí c/ Laranja', desc: 'Suco de açaí cítrico e refrescante', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se7', name: '07 - Açaí, Abacaxi e Laranja', desc: 'Suco energético tropical', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se8', name: '08 - Açaí c/ Frutas - Leite ou Laranja', desc: 'Escolha suas frutas preferidas', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se9', name: '09 - Açaí, Banana, Morango e Leite', desc: 'Vitamina vermelha turbinada', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se10', name: '10 - Amora, Morango e Leite', desc: 'Vitamina de Frutas Vermelhas', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se11', name: '11 - Morango, Banana, Amora e Leite', desc: 'Mix cremoso de frutas', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se12', name: '12 - Morango, Acerola e Leite', desc: 'Delicioso e rico em nutrientes', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se13', name: '13 - Morango, Maçã, Banana e Leite', desc: 'Muito saboroso', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se14', name: '14 - Manga, Morango, Amora e Leite', desc: 'Especial tropical e frutas vermelhas', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se15', name: '15 - Morango, Maracujá e Leite', desc: 'Agridoce perfeito', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se16', name: '16 - Laranja, Morango e Abacaxi', desc: 'Suco natural refrescante', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] },
+                    { id: 'se17', name: '17 - Suco D-TOX', desc: 'Laranja, Couve, Abacaxi, Gengibre, Hortelã e Limão', prices: [{ label: 'Copo 500ml', val: 12.00 }, { label: 'Jarra 800ml', val: 21.00 }] }
+                ]
+            },
+            {
+                category: 'acai',
+                title: '🍨 Creme de Açaí',
+                subtitle: 'Açaí bem cremoso no pote',
+                items: [
+                    { id: 'ac1', name: 'Açaí, Banana, Leite em Pó e Granola', desc: 'Pote 300ml servido caprichado', prices: [{ label: 'Pote 300ml', val: 15.00 }] },
+                    { id: 'ac2', name: 'Açaí, Banana e Leite em Pó', desc: 'Pote 300ml tradicional', prices: [{ label: 'Pote 300ml', val: 15.00 }] },
+                    { id: 'ac3', name: 'Açaí, Granola, Xarope, Banana e Leite em Pó', desc: 'Pote 500ml reforçado', prices: [{ label: 'Pote 500ml', val: 18.00 }] },
+                    { id: 'ac4', name: 'Acréscimo: Leite Condensado', desc: 'Adicional para o seu pote de açaí', prices: [{ label: 'Porção', val: 2.00 }] }
+                ]
+            },
+            {
+                category: 'salgados',
+                title: '🥐 Salgados Assados & Lanches',
+                subtitle: 'Quentinhos e prontos para consumo',
+                items: [
+                    { id: 'sg1', name: 'Enroladinho de Presunto e Mussarela', desc: 'Salgado assado', prices: [{ label: 'Unidade', val: 6.00 }] },
+                    { id: 'sg2', name: 'Pastel Assado', desc: 'Sabores variados', prices: [{ label: 'Unidade', val: 6.00 }] },
+                    { id: 'sg3', name: 'Empada', desc: 'Massa podre saborosa', prices: [{ label: 'Unidade', val: 6.00 }] },
+                    { id: 'sg4', name: 'Hambúrguer Assado', desc: 'Pão fofinho recheado', prices: [{ label: 'Unidade', val: 8.00 }] },
+                    { id: 'sg5', name: 'Pão de Queijo', desc: 'Tradicional', prices: [{ label: 'Unidade', val: 4.50 }] },
+                    { id: 'sg6', name: 'Tortinha de Frango c/ Catupiry', desc: 'Massa leve e bastante recheio', prices: [{ label: 'Unidade', val: 8.00 }] },
+                    { id: 'sg7', name: 'Esfirra de Carne', desc: 'Assada e temperada', prices: [{ label: 'Unidade', val: 7.00 }] },
+                    { id: 'sg8', name: 'Tortinha de Frango e Mussarela', desc: 'Assada na hora', prices: [{ label: 'Unidade', val: 7.00 }] }
+                ]
+            },
+            {
+                category: 'bebidas',
+                title: '⚡ Bebidas & Energéticos',
+                subtitle: 'Bebidas geladas para matar a sede',
+                items: [
+                    { id: 'bb1', name: 'Refrigerante Lata', desc: '350ml geladinho', prices: [{ label: 'Lata 350ml', val: 6.00 }] },
+                    { id: 'bb2', name: 'Refrigerante PET 600ml', desc: 'Garrafa 600ml', prices: [{ label: 'PET 600ml', val: 8.00 }] },
+                    { id: 'bb3', name: 'Isotônico', desc: 'Gatorade / Powerade', prices: [{ label: '500ml', val: 8.00 }] },
+                    { id: 'bb4', name: 'Cerveja Lata', desc: 'Brahma / Skol / Amstel', prices: [{ label: 'Lata 350ml', val: 6.00 }] },
+                    { id: 'bb5', name: 'Cerveja Latão', desc: '473ml trincando', prices: [{ label: 'Latão 473ml', val: 7.00 }] },
+                    { id: 'bb6', name: 'Água Mineral 500ml', desc: 'Sem gás', prices: [{ label: 'Garrafa 500ml', val: 3.00 }] },
+                    { id: 'bb7', name: 'Água Mineral 1500ml', desc: 'Garrafa 1.5 Litros', prices: [{ label: '1.5 Litros', val: 6.00 }] },
+                    { id: 'bb8', name: 'Água Mineral c/ Gás 500ml', desc: 'Com gás', prices: [{ label: 'Garrafa 500ml', val: 3.50 }] },
+                    { id: 'bb9', name: 'Energético (Red Bull ou Monster)', desc: 'Lata gelada', prices: [{ label: 'Lata', val: 12.00 }] }
+                ]
+            }
+        ];
+
+        let cart = {}; // key: `${itemId}-${priceIndex}`, val: { item, priceObj, qty }
+        let currentCategory = 'todos';
+
+        // Render Menu
+        function renderMenu() {
+            const container = document.getElementById('menuContainer');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            container.innerHTML = '';
+
+            menuData.forEach(cat => {
+                if (currentCategory !== 'todos' && cat.category !== currentCategory) return;
+
+                // Filter items by search
+                const filteredItems = cat.items.filter(item => 
+                    item.name.toLowerCase().includes(searchVal) || 
+                    item.desc.toLowerCase().includes(searchVal)
+                );
+
+                if (filteredItems.length === 0) return;
+
+                const catElement = document.createElement('div');
+                catElement.className = 'bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-100';
+
+                let itemsHTML = filteredItems.map(item => {
+                    let priceButtons = item.prices.map((p, idx) => {
+                        const cartKey = `${item.id}-${idx}`;
+                        const qty = cart[cartKey] ? cart[cartKey].qty : 0;
+
+                        return `
+                            <div class="flex items-center justify-between bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 mt-2">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-700 block">${p.label}</span>
+                                    <span class="text-sm font-extrabold text-brand-600">R$ ${p.val.toFixed(2).replace('.', ',')}</span>
+                                </div>
+                                
+                                ${qty === 0 ? `
+                                    <button onclick="addToCart('${item.id}', ${idx})" class="bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl transition flex items-center space-x-1 shadow-sm">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                        <span>Adicionar</span>
+                                    </button>
+                                ` : `
+                                    <div class="flex items-center space-x-2 bg-brand-500 text-white rounded-xl p-1 shadow-sm">
+                                        <button onclick="updateQty('${cartKey}', -1)" class="w-7 h-7 flex items-center justify-center hover:bg-black/10 rounded-lg font-bold">-</button>
+                                        <span class="text-xs font-extrabold w-4 text-center">${qty}</span>
+                                        <button onclick="updateQty('${cartKey}', 1)" class="w-7 h-7 flex items-center justify-center hover:bg-black/10 rounded-lg font-bold">+</button>
+                                    </div>
+                                `}
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="py-3.5 border-b border-slate-100 last:border-b-0">
+                            <h4 class="font-bold text-slate-800 text-sm sm:text-base leading-snug">${item.name}</h4>
+                            <p class="text-xs text-slate-500 mt-0.5">${item.desc}</p>
+                            <div class="mt-2 space-y-1">
+                                ${priceButtons}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                catElement.innerHTML = `
+                    <div class="mb-4">
+                        <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">${cat.title}</h3>
+                        <p class="text-xs text-slate-500 font-medium">${cat.subtitle}</p>
+                    </div>
+                    <div class="divide-y divide-slate-100">
+                        ${itemsHTML}
+                    </div>
+                `;
+
+                container.appendChild(catElement);
+            });
+
+            if (container.children.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-3xl p-6 border border-slate-100">
+                        <span class="text-4xl block mb-2">🔍</span>
+                        <h3 class="font-bold text-slate-800">Nenhum item encontrado</h3>
+                        <p class="text-xs text-slate-500 mt-1">Tente pesquisar outro termo ou navegar pelas categorias.</p>
+                    </div>
+                `;
+            }
+
+            lucide.createIcons();
+        }
+
+        // Add to Cart
+        function addToCart(itemId, priceIdx) {
+            let itemObj = null;
+            menuData.forEach(c => {
+                c.items.forEach(i => {
+                    if (i.id === itemId) itemObj = i;
+                });
+            });
+
+            if (!itemObj) return;
+
+            const cartKey = `${itemId}-${priceIdx}`;
+            cart[cartKey] = {
+                item: itemObj,
+                priceObj: itemObj.prices[priceIdx],
+                qty: 1
+            };
+
+            updateCartUI();
+            renderMenu();
+        }
+
+        // Update Quantity
+        function updateQty(cartKey, delta) {
+            if (!cart[cartKey]) return;
+
+            cart[cartKey].qty += delta;
+            if (cart[cartKey].qty <= 0) {
+                delete cart[cartKey];
+            }
+
+            updateCartUI();
+            renderMenu();
+            renderCartModalList();
+        }
+
+        // Category Filter
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = 'cat-btn active bg-brand-500 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm whitespace-nowrap transition';
+                } else {
+                    btn.className = 'cat-btn bg-white text-slate-700 hover:bg-slate-100 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-200 whitespace-nowrap transition';
+                }
+            });
+            renderMenu();
+        }
+
+        function filterMenu() {
+            renderMenu();
+        }
+
+        // Update Cart Bottom Bar UI
+        function updateCartUI() {
+            let total = 0;
+            let count = 0;
+
+            Object.values(cart).forEach(entry => {
+                total += entry.priceObj.val * entry.qty;
+                count += entry.qty;
+            });
+
+            const cartBar = document.getElementById('cartBar');
+            const cartTotalText = document.getElementById('cartTotalText');
+            const modalTotalText = document.getElementById('modalTotalText');
+            const cartCountBadge = document.getElementById('cartCountBadge');
+
+            cartTotalText.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            modalTotalText.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            cartCountBadge.innerText = `${count} ${count === 1 ? 'item selecionado' : 'itens selecionados'}`;
+
+            if (count > 0) {
+                cartBar.classList.remove('translate-y-full');
+            } else {
+                cartBar.classList.add('translate-y-full');
+                closeCartModal();
+            }
+        }
+
+        // Cart Modal Render
+        function renderCartModalList() {
+            const listContainer = document.getElementById('cartItemsList');
+            if (Object.keys(cart).length === 0) {
+                listContainer.innerHTML = '<p class="text-center text-slate-400 text-sm py-8">Seu carrinho está vazio.</p>';
+                return;
+            }
+
+            listContainer.innerHTML = Object.entries(cart).map(([key, entry]) => {
+                const subtotal = entry.priceObj.val * entry.qty;
+                return `
+                    <div class="flex items-center justify-between pt-3 first:pt-0">
+                        <div class="pr-2">
+                            <h5 class="font-bold text-slate-800 text-sm leading-tight">${entry.item.name}</h5>
+                            <p class="text-xs text-slate-500">${entry.priceObj.label} • R$ ${entry.priceObj.val.toFixed(2).replace('.', ',')}</p>
+                            <span class="text-xs font-bold text-brand-600">Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-slate-100 rounded-xl p-1">
+                            <button onclick="updateQty('${key}', -1)" class="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm font-bold text-slate-700 hover:bg-slate-200">-</button>
+                            <span class="text-xs font-bold w-4 text-center">${entry.qty}</span>
+                            <button onclick="updateQty('${key}', 1)" class="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm font-bold text-slate-700 hover:bg-slate-200">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openCartModal() {
+            renderCartModalList();
+            const modal = document.getElementById('cartModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeCartModal() {
+            const modal = document.getElementById('cartModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        // Config WhatsApp Number Modal
+        function toggleConfigModal() {
+            const modal = document.getElementById('configModal');
+            document.getElementById('whatsappNumberInput').value = whatsappNumber;
+            modal.classList.toggle('hidden');
+        }
+
+        function saveWhatsappNumber() {
+            const inputVal = document.getElementById('whatsappNumberInput').value.replace(/\D/g, '');
+            if (inputVal.length < 10) {
+                alert('Por favor, digite um número de WhatsApp válido com DDD.');
+                return;
+            }
+            whatsappNumber = inputVal;
+            localStorage.setItem('doceSaborWhatsApp', whatsappNumber);
+            toggleConfigModal();
+            alert('Número do WhatsApp atualizado com sucesso!');
+        }
+
+        // Send Order to WhatsApp
+        function sendOrderToWhatsApp() {
+            if (Object.keys(cart).length === 0) return;
+
+            const name = document.getElementById('customerName').value.trim() || 'Cliente';
+            const delivery = document.getElementById('deliveryOption').value;
+            const notes = document.getElementById('orderNotes').value.trim();
+
+            let message = `🍓 *PEDIDO - DOCE SABOR* 🍓\n\n`;
+            message += `👤 *Nome:* ${name}\n`;
+            message += `📍 *Opção:* ${delivery}\n`;
+            if (notes) message += `📝 *Obs:* ${notes}\n`;
+            message += `\n📋 *ITENS DO PEDIDO:*\n`;
+
+            let total = 0;
+            Object.values(cart).forEach((entry, idx) => {
+                const subtotal = entry.priceObj.val * entry.qty;
+                total += subtotal;
+                message += `${idx + 1}. *${entry.item.name}*\n   ↳ ${entry.qty}x ${entry.priceObj.label} = R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+            });
+
+            message += `\n💰 *TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
+            message += `Obrigado! Aguardo a confirmação do pedido.`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const waUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+            window.open(waUrl, '_blank');
+        }
+
+        // Initialize App
+        window.onload = function() {
+            renderMenu();
+            lucide.createIcons();
+        };
+    </script>
 </body>
 </html>
