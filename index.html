@@ -311,17 +311,39 @@
                 <!-- Inserido dinamicamente via JS -->
             </div>
 
-            <!-- OPÇÃO DE RETIRADA / ENTREGA & OBS -->
-            <div class="space-y-2 border-t pt-3">
+            <!-- OPÇÃO DE RETIRADA / ENTREGA & DADOS DE ENTREGA -->
+            <div class="space-y-3 border-t pt-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Opção de Pedido:</label>
-                    <select id="deliveryOption" class="w-full text-xs p-2 border rounded-lg bg-slate-50 font-semibold text-slate-700">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Opção de Pedido:</label>
+                    <select id="deliveryOption" onchange="toggleDeliveryFields()" class="w-full text-xs p-2.5 border rounded-lg bg-slate-50 font-semibold text-slate-800">
                         <option value="Retirada no Quiosque">Retirada Rápida no Quiosque</option>
-                        <option value="Entrega">Entrega no Endereço</option>
+                        <option value="Entrega">Entrega no Endereço / Pavilhão</option>
                     </select>
                 </div>
+
+                <!-- CAMPOS OBRIGATÓRIOS SE FOR ENTREGA -->
+                <div id="deliveryFields" class="hidden space-y-2 bg-orange-50/80 p-3 rounded-xl border border-orange-200">
+                    <p class="text-xs font-bold text-orange-800 flex items-center gap-1">
+                        <i class="fa-solid fa-location-dot"></i> Dados Obrigatórios para Entrega:
+                    </p>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700">Nome Completo *</label>
+                        <input type="text" id="clientName" placeholder="Ex: João da Silva" class="w-full text-xs p-2 border rounded-lg bg-white focus:ring-2 focus:ring-orange-400 focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700">Pavilhão *</label>
+                            <input type="text" id="clientPavilion" placeholder="Ex: Pavilhão 02" class="w-full text-xs p-2 border rounded-lg bg-white focus:ring-2 focus:ring-orange-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700">Loja / Área *</label>
+                            <input type="text" id="clientStore" placeholder="Ex: Loja 15" class="w-full text-xs p-2 border rounded-lg bg-white focus:ring-2 focus:ring-orange-400 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Observações (ex: sem açúcar, troco para R$50):</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Observações (ex: sem açúcar, troco para R$50):</label>
                     <input type="text" id="orderNotes" placeholder="Escreva aqui..." class="w-full text-xs p-2 border rounded-lg bg-slate-50">
                 </div>
             </div>
@@ -332,7 +354,7 @@
                     <div class="text-xs text-slate-400">Total Geral:</div>
                     <div class="text-xl font-black text-emerald-600" id="modalCartTotal">R$ 0,00</div>
                 </div>
-                <button onclick="sendOrderToWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-5 py-3 rounded-xl flex items-center gap-2 shadow-lg">
+                <button onclick="sendOrderToWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-5 py-3 rounded-xl flex items-center gap-2 shadow-lg transition">
                     <i class="fa-brands fa-whatsapp text-xl"></i> Enviar Pedido
                 </button>
             </div>
@@ -448,6 +470,18 @@
             alert('Número do WhatsApp atualizado com sucesso!');
         }
 
+        // MOSTRAR/ESCONDER CAMPOS DE ENTREGA
+        function toggleDeliveryFields() {
+            const option = document.getElementById('deliveryOption').value;
+            const deliveryFields = document.getElementById('deliveryFields');
+            if (option === 'Entrega') {
+                deliveryFields.classList.remove('hidden');
+            } else {
+                deliveryFields.classList.add('hidden');
+            }
+        }
+
+        // ENVIAR PEDIDO COM VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS
         function sendOrderToWhatsApp() {
             if (cart.length === 0) return;
 
@@ -455,13 +489,31 @@
             const notes = document.getElementById('orderNotes').value.trim();
             const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0).toFixed(2).replace('.', ',');
 
+            let deliveryText = '';
+
+            // Se for Entrega, valida os 3 campos
+            if (option === 'Entrega') {
+                const name = document.getElementById('clientName').value.trim();
+                const pavilion = document.getElementById('clientPavilion').value.trim();
+                const store = document.getElementById('clientStore').value.trim();
+
+                if (!name || !pavilion || !store) {
+                    alert('Por favor, preencha todos os dados de entrega:\n• Nome Completo\n• Pavilhão\n• Nome da Loja / Área');
+                    return;
+                }
+
+                deliveryText = `\n📍 *ENTREGA:* ${option}\n👤 *Nome:* ${name}\n🏢 *Pavilhão:* ${pavilion}\n🏪 *Loja/Área:* ${store}\n`;
+            } else {
+                deliveryText = `\n📍 *Opção:* ${option}\n`;
+            }
+
             let msg = `*--- PEDIDO: DOCE SABOR ---*\n\n`;
             cart.forEach(item => {
                 msg += `• *${item.qty}x* ${item.name} - R$ ${(item.price * item.qty).toFixed(2).replace('.', ',')}\n`;
             });
 
             msg += `\n💰 *Total:* R$ ${total}\n`;
-            msg += `📍 *Opção:* ${option}\n`;
+            msg += deliveryText;
             if (notes) msg += `📝 *Obs:* ${notes}\n`;
 
             const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
